@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
     public Rigidbody2D rb;
     public float moveSpeed = 5;
     public Vector2 moveInput;
+    public Animator anim;
     public Vector2 playerMinToMax(Transform Max)
     {
         return Camera.main.ScreenToWorldPoint(Max.position);
@@ -21,18 +22,14 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         MaxMinUI = GameObject.Find("Max").transform;
         MaxSave = playerMinToMax(MaxMinUI);
+        anim = GetComponent<Animator>();
     }
     // Update is called once per frame
     void Update()
     {
-        if ((transform.position.x < MaxSave.x && transform.position.x > -MaxSave.x)|| transform.position.y < MaxSave.y && transform.position.y > -MaxSave.y)
-        {
-            rb.velocity = moveInput * moveSpeed;
-        }
-        else
-        {
-            rb.velocity = Vector2.zero;
-        }
+        rb.velocity = moveInput * moveSpeed;
+        transform.position = new Vector3(Mathf.Clamp(transform.position.x, -MaxSave.x, +MaxSave.x), Mathf.Clamp(transform.position.y, -MaxSave.y, +MaxSave.y), 0);
+        anim.SetFloat("Movement", moveInput.y);
         if (Input.GetAxisRaw("Horizontal") != 0 && Input.GetAxisRaw("Vertical") != 0)
         {
             moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
